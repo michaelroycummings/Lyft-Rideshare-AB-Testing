@@ -118,7 +118,7 @@ Common invariant metrics are:
 - ***Seasonality***: a specific time of day, day of week, day of month, or part of year.
 - ***Demographics***: age, sex, gender, race, education level, employment status, marital status, occupation, religious affiliation.
 - ***Location***: specific location, urban vs suburban vs rural vs airport, tourist binary.
-- ***New User***. whether the user has experienced the product before testing the feature change. This metric is necessary for determining novelty effect unbiased by other confounders.
+- ***New User***: whether the user has experienced the product before testing the feature change. This metric is necessary for determining novelty effect unbiased by other confounders.
 
 <br>
 
