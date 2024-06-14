@@ -11,8 +11,6 @@ In this article:
 
 The plan meticulously outlines the experimental design, including identifying key metrics such as ride cancellations, feature usage, and overall app interaction, defining key stratification features, and avoiding two-sided market dependencies. The experiment utilizes a combination of continuous, categorical, and binary metrics to evaluate both direct impacts on user experience and indirect effects on Lyft's operational efficiency. Additionally, it details the importance of stratification and careful sample sizing to ensure robustness and accuracy in the results. The goal is to accurately measure how changes in wait times influence user decisions and overall satisfaction, guiding Lyft in optimizing their service to better meet customer needs and enhance profitability.
 
-
-
 <br>
 
 #### Table of Contents
@@ -27,7 +25,7 @@ The plan meticulously outlines the experimental design, including identifying ke
 
 I put lots of thought into note optimization, in terms of layout and sequence of information, so that when working on a problem, the header you most naturally look for has all the information you would need at that part of your project, and in the order you will likely need to think about it in.
 1. If you have any ideas for how an A/B Testing guide could be better organized to deliver relevant info at any section within this guide, please let me know!
-2. As well, if you come across a section and know of an edge case or good practice that is not mentioned, I'd love to recommit the article with your method included, with a tag to your Github or LinkedIn!
+2. As well, if you come across a section and know of an edge case or good practice that is not mentioned, I'd love to recommit the article with your method included, with a tag to your GitHub or LinkedIn!
 
 <br><br><br>
 
@@ -86,7 +84,6 @@ Click here to return to the [Table of Contents](#table-of-contents).
 ### 1) Identify Metrics
 ---
 
-
 Before any hypothesis testing or testing design is performed, we must define success by carefully considering the following types of metrics: evaluation metrics, counter metrics, guardrail metrics, and invariant metrics.
 
 <br>
@@ -140,7 +137,7 @@ Evaluation metrics:
     - We should also consider how varying the wait time affects user's general preference for Lyft over competitors like Uber and substitutes like public transit.
     - I would track the number of times the app is opened and any product is interacted with, per unit of time chosen for randomization.
 4. Shared-Rides Gross Profit:
-    - In a two sided market with algorithm-controlled incentives and pricing, there are many moving parts. Including a metric that tracks the revenues and expenses of operations directly linked to shared rides gives us a method to catch and diagnose unforeseen effects of our max wait time treatments.
+    - In a two-sided market with algorithm-controlled incentives and pricing, there are many moving parts. Including a metric that tracks the revenues and expenses of operations directly linked to shared rides gives us a method to catch and diagnose unforeseen effects of our max wait time treatments.
     - This metric assumes that the revenues, incentives, base driver pay, and other expenses of shared rides can be separated from other business operations like non-shared rides.
 
 Counter metrics:
@@ -148,11 +145,11 @@ Counter metrics:
     - Optimally, I would test ride ratings and app ratings, but if I had to choose one option to keep the metric list short, I would choose app ratings to include users that are turned away by excessive wait times and never get a change to rate a ride after being given a treatment.
     - This would be a categorical variable tracking the rating from 1 to 5 stars, for each rating a user submits.
 2. Driver App Ratings:
-    - Lyft operates in a two-way market. Without satisfied drivers, there is no Lyft service. Its possible that changing max wait time changes how some drivers experience the rider assignment algorithm. Thus, I would also catch any unforeseen problems for drivers with this feature.
+    - Lyft operates in a two-way market. Without satisfied drivers, there is no Lyft service. It's possible that changing max wait time changes how some drivers experience the rider assignment algorithm. Thus, I would also catch any unforeseen problems for drivers with this feature.
     - This would be a categorical variable tracking the rating from 1 to 5 stars, for each rating a driver submits.
 3. Cancellations on Finding-Driver Screen:
     - As well as user behavior, we should consider algorithm behavior. Decreasing the max wait time means the matching algorithm will wait to give users a ride until a driver and shared ride user are close enough, potentially leading to the same wait times, just on a different waiting screen. Thus, we should also measure cancellation rate and average wait time for the period between selecting shared rides and receiving a driver and wait time.
-    - This would be a binary variable tracking, for each instance that a ride is requested, whether the user cancels the ride before an a wait time is given.
+    - This would be a binary variable tracking, for each instance that a ride is requested, whether the user cancels the ride before a wait time is given.
 
 Invariant metrics:
 1. Hour and Day:
@@ -256,7 +253,7 @@ The choice of randomization unit can keep intact our "independence between units
 In two-sides markets, the independence assumption violation is mainly due to ***resource sharing*** between groups, meaning an effect in one group takes resources from the other group, which ***overestimates*** any positive or negative effect. For example, when testing riders or drivers of a ride-hailing operation, a successful treatment will take riders or drivers away from the control group, removing dependence between the control and treatment.
 
 Preventions include geo-based and time-based randomization.
-- ***Geo-based*** randomization means creating units on geographical regions where users between regions interact less frequently than the users within each region. For a ride hauling app, randomizing per city could be a viable choice. If the geographical region chosen or needed is large, the will be a small sample size, in which case qualitative care should be taken to ensure each treatment group and the control group have equal counts of regions with equal or similar characteristics as it pertains to the phenomenon being tested.
+- ***Geo-based*** randomization means creating units on geographical regions where users between regions interact less frequently than the users within each region. For a ride hauling app, randomizing per city could be a viable choice. If the geographical region chosen or needed is large, there will be a small sample size, in which case qualitative care should be taken to ensure each treatment group and the control group have equal counts of regions with equal or similar characteristics as it pertains to the phenomenon being tested.
 - ***Time-based*** randomization means creating units on short intervals of time. Users are then exposed to a treatment or the control assigned to that period of time.
     - Naturally, this described a specific implementation (unordered) of the multi-exposure method mentioned in the above section, so it comes with the same considerations about washout time and onset time.
     - If a *separate subjects test* or *paired tests*
@@ -277,9 +274,9 @@ Preventions revolve around clustering.
 
 Lyft operates in a two sided market, so our independent units assumption is false if we chose users as the only unit of randomization. Our two known options are geo-based and time-based randomization. Geo-based randomization is not a great resolution for our Lyft example because geographical regions are likely to be strongly dependent until we zoom out to the city level, at which point the number of units (number of cities) is very small, making it difficult to create treatment and control groups with equal distributions of confounding variables. Time-based randomization is a great option as our treatments will likely have an immediate effect on users.
 
-The units of randomization would therefore be users and time, and the units of diversion would be user identifiers. Specifically, I would run the trial over a two week period and divide this experimental period into 2016 10-minute time-units. Since I've chosen a series of paired tests, I would first randomize by users to fill the g treatment and control groups, and then randomize assignment of each time-unit to one of the g groups.
+The units of randomization would therefore be users and time, and the units of diversion would be user identifiers. Specifically, I would run the trial over a two-week period and divide this experimental period into 2016 10-minute time-units. Since I've chosen a series of paired tests, I would first randomize by users to fill the g treatment and control groups, and then randomize assignment of each time-unit to one of the g groups.
 
-Although using a single, long time period per group would avoid the resource sharing problem of Lyft's two-sided market, as you will see in [Stratification along Time](#2d-stratification-along-time), randomizing by multiple, short periods allows us to accounting for time as a confounder.
+Although using a single, long time period per group would avoid the resource sharing problem of Lyft's two-sided market, as you will see in [Stratification along Time](#2d-stratification-along-time), randomizing by multiple, short periods allows us to account for time as a confounder.
 
 <br>
 
@@ -298,7 +295,6 @@ Reasons for stratification:
 
 Stratification via resampling the sample:
 - If you can’t choose the control and / or treatment groups (e.g., treatment must be chosen freely by customer), resampling to achieve equal strata across groups enables transformation of potentially biased data to a representative sample.
-
 
 <br>
 
@@ -343,7 +339,7 @@ As a side note, although its not feasible to carry out the study for a whole yea
 ### 2e) Screening / Filtering
 ---
 
-Screening is when a criteria is set on the units that are included in the study. This criteria can be a decision boundaries on invariant metrics. For example, a restaurant testing lighting features may want to focus on how their highest paying customers are effected by the changes. They could do this by filtering for frequent customers over 30 years old.
+Screening is when a criteria is set on the units that are included in the study. This criteria can be a decision boundaries on invariant metrics. For example, a restaurant testing lighting features may want to focus on how their highest paying customers are affected by the changes. They could do this by filtering for frequent customers over 30 years old.
 
 As well, the criteria can be an action that users take during the study. For example, a website may be optimizing display features and want to test the display changes only on customers that have already added an item to their online basket.
 
@@ -369,7 +365,7 @@ The sample ratio is the difference in size between the treatment group and the c
 Using an imbalanced ratio (<1.0) can be useful or necessary in many business cases:
 - Sample ratio above 1:
     - In cases where a treatment has significant previous evidence of success, a control could mean lost profits. Thus, a small control group can be used to minimize missing out on expected profit while accurately defining the treatment's effect on its customer segments.
-    - In medical cases with previous evidence of success, it can be a moral question to not give potentially life saving treatment to affected users for the sake of having a control group.
+    - In medical cases with previous evidence of success, it can be a moral question to not give potentially lifesaving treatment to affected users for the sake of having a control group.
 - Sample ratio below 1:
     - In many cases the treatment is untested, and applying it to the entire customer base could lead to a decrease in short-term revenue as well as a loss in customers. This is an especially important consideration in markets where the product differences between competitors is very small, like that for Lyft and Uber.
 
@@ -387,7 +383,7 @@ If we control the total sample size of all groups combined, larger imbalances be
 
 <u>**Example Application**</u>
 
-As we are testing max wait times in this Lyft example, we run the potential of two losses. Firstly, short term revenue losses in situations where customers encounter a wait time above their tolerance and choose to look for a ride with competitor apps. Secondly, lets consider the type of customer that prefers to stick with a single ride hailing app until it causes them efficiency problems, instead of regularly compare apps for the best prices and times. For these customers, encounter multiple instances of long max wait times may cause them to switch to a competitor and not consider Lyft again for a long period. This risk is possible even considering that max wait times are being tested only in the ride sharing feature, which is likely used by cost-conscious customers.
+As we are testing max wait times in this Lyft example, we run the potential of two losses. Firstly, short term revenue losses in situations where customers encounter a wait time above their tolerance and choose to look for a ride with competitor apps. Secondly, let's consider the type of customer that prefers to stick with a single ride hailing app until it causes them efficiency problems, instead of regularly compare apps for the best prices and times. For these customers, encounter multiple instances of long max wait times may cause them to switch to a competitor and not consider Lyft again for a long period. This risk is possible even considering that max wait times are being tested only in the ride sharing feature, which is likely used by cost-conscious customers.
 
 Thus, I would opt for keeping the treatment groups much smaller than the control, which will have the smallest max wait time. The exact sample sizes will be determined in step 3 when we decide on the statistical test and power needed for the experiment.
 
@@ -402,14 +398,14 @@ Consider current events to avoid running the experiment during periods of unusua
 
 <u>**Example Application**</u>
 
-This consideration is especially true for our Lyft example, where the first weeks of school, elections, or extreme weather events will significantly change peoples transportation needs and priority level.
+This consideration is especially true for our Lyft example, where the first weeks of school, elections, or extreme weather events will significantly change people's transportation needs and priority level.
 
 <br>
 
 ### 2h) When to Start Measuring
 ---
 
-***Novelty effects*** and ***primacy effects*** are people's initial positive or negative reactions to a change, that do not persist after a short period. These effects can be present during an A/B test but disappear during or after the rollout of the change, causing confusion. Thus, if a treatment is likely to cause a short term effect, one of the below solutions should be implemented.
+***Novelty effects*** and ***primacy effects*** are people's initial positive or negative reactions to a change, that do not persist after a short period. These effects can be present during an A/B test but disappear during or after the rollout of the change, causing confusion. Thus, if a treatment is likely to cause a short-term effect, one of the below solutions should be implemented.
 
 <br>
 
@@ -424,7 +420,7 @@ To mitigate the impact of these transient effects and capture more reliable, lon
     - Implementation: the treatment effect on both user groups is monitored until the current users display a similar effect to new users. Data is then gathered for hypothesis testing.
     - Tradeoffs: This method makes the strong assumption that new and current users will not experience the treatment differently. Given this assumption, it is sure to avoid novelty and primacy effects.
 - Time-Based Adaptation Assumption:
-    - Implementation: after the treatment is applied, assuming the treatment alters the levels of the evaluation metrics, these metrics are monitored until a second change in effect is seen and then plateaus to a new level. This second change is assumed to be the end of novelty / primacy effects and a return to the long term effect of the change.
+    - Implementation: after the treatment is applied, assuming the treatment alters the levels of the evaluation metrics, these metrics are monitored until a second change in effect is seen and then plateaus to a new level. This second change is assumed to be the end of novelty / primacy effects and a return to the long-term effect of the change.
     - Tradeoffs: this method is useful when the sample size of new users is small or when it is not viable to give new users the treatment. It makes the assumption that novelty / primacy effects are present. This assumption can be relaxed by setting a max wait time before recording data for hypothesis testing, even if no drop and plateau is seen.
 
 <br>
@@ -476,7 +472,7 @@ A note on testing multiple treatments:
 
 Explanation:
 - For A/B/N tests, we can perform a single ANOVA test and avoid needing to apply multiple-testing correction.
-- For A/B tests, we first consider using a Z-test. If conditions for use are not met we consider using a T-test. If those conditions for use are not met, we use one of the above tests.
+- For A/B tests, we first consider using a Z-test. If conditions for use are not met, we consider using a T-test. If those conditions for use are not met, we use one of the above tests.
 
 Conditions for use:
 - ANOVA tests:
@@ -545,7 +541,7 @@ Conditions for use:
 
 **CLT-based Tests**
 
-I would like to note a *commonly overlooked reality about the use of the CLT* in hypothesis tests. The most common parametric tests make use of the ***central limit theorem*** which (paraphrasing) states that a sum of random variables (with finite mean and variance) approximates a gaussian distribution as the number of random variables (n) in that sum, approaches infinity. The problem here is that some random variables approximate a gaussian for much smaller values of n than others, with the sum of some random variables not approximating a gaussian even after billions of observations. Thankfully, most metrics we measure follow nicely conforming distributions like the binary, binomial, or poisson distribution, all of which approximate a gaussian for small n. But as data scientists and statisticians, we should keep this caveat in mind for those metrics where it becomes applicable.
+I would like to note a *commonly overlooked reality about the use of the CLT* in hypothesis tests. The most common parametric tests make use of the ***central limit theorem*** which (paraphrasing) states that a sum of random variables (with finite mean and variance) approximates a gaussian distribution as the number of random variables (n) in that sum, approaches infinity. The problem here is that some random variables approximate a gaussian for much smaller values of n than others, with the sum of some random variables not approximating a gaussian even after billions of observations. Thankfully, most metrics we measure follow nicely conforming distributions like the binary, binomial, or Poisson distribution, all of which approximate a gaussian for small n. But as data scientists and statisticians, we should keep this caveat in mind for those metrics where it becomes applicable.
 
 <br>
 
@@ -553,7 +549,7 @@ I would like to note a *commonly overlooked reality about the use of the CLT* in
 
 The derivation of a parametric hypothesis test generally follows this format:
 1. We start by determining the distribution of the metric of interest.
-    - For example, lets say a car company is testing number of vehicles rented per hour out of a fixed stock. The metric in this case is binomially distributed, so `X~Binomial(n,p)`.
+    - For example, let's say a car company is testing number of vehicles rented per hour out of a fixed stock. The metric in this case is binomially distributed, so `X~Binomial(n,p)`.
 2. We then choose a summary parameter, apply summary parameter function to the metric, and determine the distribute we get back.
     - Following the car example, choosing the summary parameter to be the mean, `E[X] = ∑ (from i=1 to n) of p / p`.
 3. We assume our sample size is large enough for the distribution to approach its asymptotic distribution as the sample size approaches infinity.
@@ -563,7 +559,7 @@ The derivation of a parametric hypothesis test generally follows this format:
 
 <u>**Example Application**</u>
 
-So far our Lyft experimental design includes a series of paired tests for continuous and binary evaluation metrics and counter metrics.
+So far, our Lyft experimental design includes a series of paired tests for continuous and binary evaluation metrics and counter metrics.
 - *Continuous metrics*: Feature Usage || App Usage || Shared-Rides Gross Profit
     - I would use a Paired T test per treatment group, metric, and strata. Z tests are not viable as we don't know population means, and the T test after n > 30 converges to the Z test anyway.
 - *Categorical metrics*: Customer Ratings || Driver Ratings
@@ -573,7 +569,7 @@ So far our Lyft experimental design includes a series of paired tests for contin
 
 <br>
 
-Lets calculate the total number of hypothesis tests needed:
+Let's calculate the total number of hypothesis tests needed:
 - 5 paired tests for our 5 treatment groups
 - 7 metrics for each treatment group
 - 24 stratification groups for each metric in each treatment group:
@@ -581,7 +577,7 @@ Lets calculate the total number of hypothesis tests needed:
     - Pick-up / Drop-off Location: I will include 3 levels: "leaving home", "towards airport", "towards home", "other".
     - Loyal vs Efficient: 2 levels exist for this confounder.
 
-In total, thats 840 tests, which is a lot but understandable given the in depth analysis we will be doing on the effect of max wait times. Given the large number of tests, the Holm-Bonferroni correction is a better choice over the Bonferroni correction in correcting the FWER. I would also use the Holm-Bonferroni correction to correct the FDR. See [Multiple Testing Problem](#multiple-testing-problem) for details.
+In total, that's 840 tests, which is a lot but understandable given the in depth analysis we will be doing on the effect of max wait times. Given the large number of tests, the Holm-Bonferroni correction is a better choice over the Bonferroni correction in correcting the FWER. I would also use the Holm-Bonferroni correction to correct the FDR. See [Multiple Testing Problem](#multiple-testing-problem) for details.
 
 <br>
 
@@ -600,7 +596,7 @@ A ***Type I Error*** or ***alpha*** (***α***) is the probability of rejecting t
 
 A ***Type II Error*** or ***beta*** (***β***) is the probability of failing to reject the null hypothesis when the null hypothesis is false.
 - Breaking that definition down, we are now conditioning on the universe where the null hypothesis is false, and then looking at the probability within that universe, of a false negative. Thus, `P(Type I) = FN / (TP + FN)`.
-- I like to compare Type II errors to the idea of "throwing away the cure for cancer". As stated above, the null is usually the status quo, meaning no cure found. So a Type II error is like finding a cure but not realizing it, and throwing it away with all the other tests that weren't cures.
+- I like to compare Type II errors to the idea of "throwing away the cure for cancer". As stated above, the null is usually the status quo, meaning no cure found. So, a Type II error is like finding a cure but not realizing it, and throwing it away with all the other tests that weren't cures.
 
 <br>
 
@@ -616,7 +612,7 @@ Without a hypothesis, the sampling distribution is an *infinite set of distribut
 
 <br>
 
-The ***null hypothesis*** is a hypothesis about the test statistic. It is set by the statistician and is almost always chosen to assumes no difference, either between population and sample (one-sample tests) or between two populations (two-sample tests). This is because of two things:
+The ***null hypothesis*** is a hypothesis about the test statistic. It is set by the statistician and is almost always chosen to assume no difference, either between population and sample (one-sample tests) or between two populations (two-sample tests). This is because of two things:
 1.	A large p-value cannot confirm the null hypothesis, it can only fail to reject it (see [here](https://link.springer.com/article/10.3758/BF03197252)).
 2.	To perform a statistical hypothesis test, one must come up with a sampling distribution for their null hypothesis. It is usually very difficult to come up with a sampling distribution for a hypothesis along the lines of “these two sample distributions are different” (see [here](https://qr.ae/pyItyV)).
 
@@ -632,7 +628,7 @@ Now we are ready to understand graphically, alpha, beta, statistical significanc
 
 ***Statistical significance*** is the probability of accepting the null hypothesis when it is true, i.e., `1 - α` or `1 - P(Type I Error)`. Perfectly named to confuse new participants to the field, the ***significance level*** is another term for α or the alpha level or the probability of a Type I error. Thus, `statistical significance = 1 - significance level`.
 
-The alpha level is set by statistician given the level of error acceptable for the problem. This can very greatly depending on the industry. The alpha level chosen determines the ***critical value***, which is the test statistic value beyond which the null hypothesis is rejected.
+The alpha level is set by statistician given the level of error acceptable for the problem. This can vary greatly depending on the industry. The alpha level chosen determines the ***critical value***, which is the test statistic value beyond which the null hypothesis is rejected.
 
 Now, prepare yourself... this graphical explanation is wordy but is the different between blindly executing a hypothesis test and understanding a hypothesis test. Graphically:
 - The alpha level is the area under the curve of the sampling distribution of the test statistic, given the distribution parameters defined by the null hypothesis, at the most extreme region(s).
@@ -674,11 +670,11 @@ Null Hypothesis and Minimal Detectible Effect per metric:
     - We have a 70% screen-to-ride conversion rate bringing in 195M per quarter. A 0.025% decrease in cancellations, holding all else constant, would increase revenue by about $47K per quarter.
     - The null hypothesis is 30% and the minimum detectible effect would be a 0.025% change in this binary metric.
 - Feature Usage:
-    - Given the assumptions, this feature has a null hypothesis of 3M rides in the two week experiment period, and a minimum detectable effect of 800 rides for the two week period, equating to around $50K revenue for the quarter.
+    - Given the assumptions, this feature has a null hypothesis of 3M rides in the two-week experiment period, and a minimum detectable effect of 800 rides for the two-week period, equating to around $50K revenue for the quarter.
 - App Usage:
-    - We have a 75% interaction-to-ride conversion rate producing 188M rides per quarter, bringing in 975M per quarter. Thus, the null null hypothesis would be 31.3M rides for the two week period, and I would want to detect a change of at least 1,570 rides for the test, corresponding to a $50K change in revenue per quarter decrease in cancellations.
+    - We have a 75% interaction-to-ride conversion rate producing 188M rides per quarter, bringing in 975M per quarter. Thus, the null null hypothesis would be 31.3M rides for the two-week period, and I would want to detect a change of at least 1,570 rides for the test, corresponding to a $50K change in revenue per quarter decrease in cancellations.
 - Shared-Rides Gross Profit:
-    - Following the stated goal to detect a minimum $50K change in revenue after incentives and driver fees per quarter, the null hypothesis for the two week period would be $32.5M and the minimum detectible effect would be $8.33K.
+    - Following the stated goal to detect a minimum $50K change in revenue after incentives and driver fees per quarter, the null hypothesis for the two-week period would be $32.5M and the minimum detectible effect would be $8.33K.
 - Customer Ratings and Driver Ratings:
     - These metrics are modelled as ordinal variables from 1 to 5, so I would want to be able to detect a change between each level.
 - Cancellations on Finding-Driver Screen:
@@ -725,8 +721,8 @@ To achieve a power of 0.8 and statistical significance of 0.95 over 840 tests:
 
 Below we can see that the cancellation rates must be increased to meet feasible sample size limits, but otherwise our minimum detectible effects are achievable.
 - At least 940K users are needed, which is 4.4% of Lyft's 2023 active user count. This is well within our sample size ratio considerations.
-- At least 53M ride requests are needed. If we use 4.4% of Lyft's users for the study, and receive an average of 3.13M shared user rides per two week period, with a 70% screen-to-ride conversion rate, we can expect 197K ride requests for the study. Thus, the minimum effect size would need to be drastically increased to 0.27%.
-- At least 1.2K ratings are needed, which would mean receiving a single rating from at least 0.0013% of our 940K experimental users within the two week experiment period, which is a reasonable expectation.
+- At least 53M ride requests are needed. If we use 4.4% of Lyft's users for the study, and receive an average of 3.13M shared user rides per two-week period, with a 70% screen-to-ride conversion rate, we can expect 197K ride requests for the study. Thus, the minimum effect size would need to be drastically increased to 0.27%.
+- At least 1.2K ratings are needed, which would mean receiving a single rating from at least 0.0013% of our 940K experimental users within the two-week experiment period, which is a reasonable expectation.
 
 <br>
 
@@ -745,9 +741,13 @@ After a thorough implementation of experimental design steps, and setting inform
 
 Throughout the data collection process, we monitor a few measures to ensure that our experiment is collecting data as planned.
 
+<br>
+
 **Sample Ratio**
 
-As we collect data we should verify that the ratio of sample sizes for each group is equal to the planned ratio. If not, our unit of diversion may not be working as intended, or we may need to consider a filter or other invariant measures that could be causing user data to be collected in a biased manner.
+As we collect data, we should verify that the ratio of sample sizes for each group is equal to the planned ratio. If not, our unit of diversion may not be working as intended, or we may need to consider a filter or other invariant measures that could be causing user data to be collected in a biased manner.
+
+<br>
 
 **Invariant Measures**
 
@@ -755,7 +755,7 @@ As data is collected, we want to continually ask two questions of the distributi
 - Are they equal across control and treatment groups?
 - Are they representative of the population of interest?
 
-If invariant measures have varying distributions between experimental groups, they will likely effects experimental metrics of the groups differently, preventing us from discerning what magnitude the treatments had on the experimental metrics.
+If invariant measures have varying distributions between experimental groups, they will likely affect experimental metrics of the groups differently, preventing us from discerning what magnitude the treatments had on the experimental metrics.
 
 As well, if the invariant metrics are equal across experimental groups but do not represent the population of interest (e.g., mostly males in a test for woman body care products), our conclusions are predictions won't be relevant to the business case.
 
@@ -766,9 +766,11 @@ As well, if the invariant metrics are equal across experimental groups but do no
 
 Once the data collection is complete, we apply the sanity checks again on the full data set, and if they pass, we move on to running the hypothesis tests.
 
+<br>
+
 **Running the Hypothesis Test**
 
-After all the work we did to set up the experimental design and hypothesis tests, actually running the tests is quite simple. In Python, the `statsmodels` library is very helpful in automating the calculations for you and returning relevant statistics.
+After all the work we did to set up the experimental design and hypothesis tests, running the tests is quite simple. In Python, the `statsmodels` library is very helpful in automating the calculations for you and returning relevant statistics.
 
 One thing I will explain here is P-value, as that was not covered in section 3.
 - Mathematically, the p-value is the probability calculated by taking the integral of the sampling distribution under the null hypothesis, between the test statistic calculated from the sample data, and the bound of the distribution, for either one or both tails.
@@ -777,20 +779,24 @@ One thing I will explain here is P-value, as that was not covered in section 3.
     - The probability of falsely rejecting the null hypothesis, given that the null hypothesis is true.
     - The smallest significance level α that will reject the null hypothesis, given the data observed.
 
+<br>
+
 **Analyzing the Results**
 
 Considerations when analyzing the data:
 - Is Simpsons Paradox at play? Analyze each strata separately.
     - This can cause metrics to seem insignificant at the group level.
-- Does a metric differs significantly between strata?
+- Does a metric differ significantly between strata?
     - If so, ensure this matches theory and is not an artifact of the experiment.
     - For example, in a website optimization study, bold text may do better in English but not in Chinese, where small, detailed, bolded characters are difficult to read.
 - Do evaluation metrics contradict each other?
     - E.g., user engagement increases but revenue decreases.
 
+<br>
+
 **Rollout Decision**
 
-Below are some considerations when making a decision on whether to roll out a treatment tested:
+Below are some considerations when deciding whether to roll out a treatment tested:
 - Consider launching the change for specific strata.
 - Consider negative effects if guardrail metric was significant.
 - Are there conflicting results between metrics?
@@ -803,7 +809,7 @@ Below are some considerations when making a decision on whether to roll out a tr
 ### 4c) Rollout Period
 ---
 
-The only advice I've gathered for this period is to considering ***ramping up*** the implementation, meaning rolling it out to a small portion of users at a time, instead of all at once. This allows for:
+The only advice I've gathered for this period is to consider ***ramping up*** the implementation, meaning rolling it out to a small portion of users at a time, instead of all at once. This allows for:
 - Monitoring of unexpected issues.
 - Understanding user impact better.
 - Giving the analytics and operation teams time to react if something goes wrong.
@@ -813,7 +819,7 @@ The only advice I've gathered for this period is to considering ***ramping up***
 ## Malpractices to Avoid
 
 The following malpractices have already been discussed in the [General Framework](#general-framework) section of this article, but they are listed here again for easy reference.
-- [Independence Assumption Violation](#independence-assumption-violation)
+- [Independence Assumption Violations](#independence-assumption-violations)
 - [Novelty and Primacy Effects](#novelty-and-primacy-effects)
 - [Simpson’s Paradox](#simpsons-paradox)
 - [Multiple Testing Problem](#multiple-testing-problem)
@@ -825,7 +831,7 @@ Click here to return to the [Table of Contents](#table-of-contents).
 
 <br>
 
-### Independence Assumption Violation
+### Independence Assumption Violations
 ---
 
 The choice of randomization unit can keep intact our "independence between units" assumption in tricky cases. For many experiments, the units of randomization will simply be users, but caution must be taken when applying A/B testing to the below phenomena.
@@ -837,7 +843,7 @@ The choice of randomization unit can keep intact our "independence between units
 In two-sides markets, the independence assumption violation is mainly due to ***resource sharing*** between groups, meaning an effect in one group takes resources from the other group, which ***overestimates*** any positive or negative effect. For example, when testing riders or drivers of a ride-hailing operation, a successful treatment will take riders or drivers away from the control group, removing dependence between the control and treatment.
 
 Preventions include geo-based and time-based randomization.
-- ***Geo-based*** randomization means creating units on geographical regions where users between regions interact less frequently than the users within each region. For a ride hauling app, randomizing per city could be a viable choice. If the geographical region chosen or needed is large, the will be a small sample size, in which case qualitative care should be taken to ensure each treatment group and the control group have equal counts of regions with equal or similar characteristics as it pertains to the phenomenon being tested.
+- ***Geo-based*** randomization means creating units on geographical regions where users between regions interact less frequently than the users within each region. For a ride hauling app, randomizing per city could be a viable choice. If the geographical region chosen or needed is large, there will be a small sample size, in which case qualitative care should be taken to ensure each treatment group and the control group have equal counts of regions with equal or similar characteristics as it pertains to the phenomenon being tested.
 - ***Time-based*** randomization means creating units on short intervals of time. Users are then exposed to a treatment or the control assigned to that period of time.
     - Naturally, this described a specific implementation (unordered) of the multi-exposure method mentioned in the above section, so it comes with the same considerations about washout time and onset time.
     - If a *separate subjects test* or *paired tests*
@@ -857,7 +863,7 @@ Preventions revolve around clustering.
 ### Novelty and Primacy Effects
 ---
 
-***Novelty effects*** and ***primacy effects*** are people's initial positive or negative reactions to a change, that do not persist after a short period. These effects can be present during an A/B test but disappear during or after the rollout of the change, causing confusion. Thus, if a treatment is likely to cause a short term effect, one of the below solutions should be implemented.
+***Novelty effects*** and ***primacy effects*** are people's initial positive or negative reactions to a change, that do not persist after a short period. These effects can be present during an A/B test but disappear during or after the rollout of the change, causing confusion. Thus, if a treatment is likely to cause a short-term effect, one of the below solutions should be implemented.
 
 <br>
 
@@ -872,7 +878,7 @@ To mitigate the impact of these transient effects and capture more reliable, lon
     - Implementation: the treatment effect on both user groups is monitored until the current users display a similar effect to new users. Data is then gathered for hypothesis testing.
     - Tradeoffs: This method makes the strong assumption that new and current users will not experience the treatment differently. Given this assumption, it is sure to avoid novelty and primacy effects.
 - Time-Based Adaptation Assumption:
-    - Implementation: after the treatment is applied, assuming the treatment alters the levels of the evaluation metrics, these metrics are monitored until a second change in effect is seen and then plateaus to a new level. This second change is assumed to be the end of novelty / primacy effects and a return to the long term effect of the change.
+    - Implementation: after the treatment is applied, assuming the treatment alters the levels of the evaluation metrics, these metrics are monitored until a second change in effect is seen and then plateaus to a new level. This second change is assumed to be the end of novelty / primacy effects and a return to the long-term effect of the change.
     - Tradeoffs: this method is useful when the sample size of new users is small or when it is not viable to give new users the treatment. It makes the assumption that novelty / primacy effects are present. This assumption can be relaxed by setting a max wait time before recording data for hypothesis testing, even if no drop and plateau is seen.
 
 <br>
@@ -887,6 +893,7 @@ To avoid this error in your analysis, ensure to carefully consider all known var
 <br>
 
 ### Multiple Testing Problem
+---
 
 When multiple analyses are done on the same data, the probability of making a type I error increases past the alpha value set for any one of the analyses.
 
@@ -902,13 +909,14 @@ Preventions:
     - The Holm-Bonferroni correction gives less control over the family-wise error rate but is still valid and is a better choice when the number of tests is large.
     - The Benjamini-Hochberg correction controls the expected proportion of false discoveries among the rejected hypotheses.
 - Use tiered significance levels depending on theoretical expectations.
-    - For example, using a three tiered system, metrics that theory says are very likely, somewhat likely, and not likely to change will get `α=0.05`, `α=0.01`, and `α=0.001`, respectively.
+    - For example, using a three-tiered system, metrics that theory says are very likely, somewhat likely, and not likely to change will get `α=0.05`, `α=0.01`, and `α=0.001`, respectively.
 
 <br>
 
 ### Data Peeking
+---
 
-Data peeking itself is not an error, and is needed to sanity check the data collection process.However, it becomes problematic when it influences decisions to prematurely stop an experiment. Each peek at the data is essentially an additional statistical test. Unnecessary additions of statistical tests means unnecessarily increasing the statistical significance needed, via a multiple testing correction.
+Data peeking itself is not an error, and is needed to sanity check the data collection process. However, it becomes problematic when it influences decisions to prematurely stop an experiment. Each peek at the data is essentially an additional statistical test. Unnecessary additions of statistical tests mean unnecessarily increasing the statistical significance needed, via a multiple testing correction.
 
 <br><br><br>
 
@@ -954,7 +962,7 @@ Evaluation metrics:
     - We should also consider how varying the wait time affects user's general preference for Lyft over competitors like Uber and substitutes like public transit.
     - I would track the number of times the app is opened and any product is interacted with, per unit of time chosen for randomization.
 4. Shared-Rides Gross Profit:
-    - In a two sided market with algorithm-controlled incentives and pricing, there are many moving parts. Including a metric that tracks the revenues and expenses of operations directly linked to shared rides gives us a method to catch and diagnose unforeseen effects of our max wait time treatments.
+    - In a two-sided market with algorithm-controlled incentives and pricing, there are many moving parts. Including a metric that tracks the revenues and expenses of operations directly linked to shared rides gives us a method to catch and diagnose unforeseen effects of our max wait time treatments.
     - This metric assumes that the revenues, incentives, base driver pay, and other expenses of shared rides can be separated from other business operations like non-shared rides.
 
 Counter metrics:
@@ -962,11 +970,11 @@ Counter metrics:
     - Optimally, I would test ride ratings and app ratings, but if I had to choose one option to keep the metric list short, I would choose app ratings to include users that are turned away by excessive wait times and never get a change to rate a ride after being given a treatment.
     - This would be a categorical variable tracking the rating from 1 to 5 stars, for each rating a user submits.
 2. Driver App Ratings:
-    - Lyft operates in a two-way market. Without satisfied drivers, there is no Lyft service. Its possible that changing max wait time changes how some drivers experience the rider assignment algorithm. Thus, I would also catch any unforeseen problems for drivers with this feature.
+    - Lyft operates in a two-way market. Without satisfied drivers, there is no Lyft service. It's possible that changing max wait time changes how some drivers experience the rider assignment algorithm. Thus, I would also catch any unforeseen problems for drivers with this feature.
     - This would be a categorical variable tracking the rating from 1 to 5 stars, for each rating a driver submits.
 3. Cancellations on Finding-Driver Screen:
     - As well as user behavior, we should consider algorithm behavior. Decreasing the max wait time means the matching algorithm will wait to give users a ride until a driver and shared ride user are close enough, potentially leading to the same wait times, just on a different waiting screen. Thus, we should also measure cancellation rate and average wait time for the period between selecting shared rides and receiving a driver and wait time.
-    - This would be a binary variable tracking, for each instance that a ride is requested, whether the user cancels the ride before an a wait time is given.
+    - This would be a binary variable tracking, for each instance that a ride is requested, whether the user cancels the ride before a wait time is given.
 
 Invariant metrics:
 1. Hour and Day:
@@ -992,13 +1000,13 @@ Since the carryover effects are likely to be varied and strong, disentangling th
 
 <br>
 
-## Units of Randomization and Diversion
+### Units of Randomization and Diversion
 
 Lyft operates in a two sided market, so our independent units assumption is false if we chose users as the only unit of randomization. Our two known options are geo-based and time-based randomization. Geo-based randomization is not a great resolution for our Lyft example because geographical regions are likely to be strongly dependent until we zoom out to the city level, at which point the number of units (number of cities) is very small, making it difficult to create treatment and control groups with equal distributions of confounding variables. Time-based randomization is a great option as our treatments will likely have an immediate effect on users.
 
-The units of randomization would therefore be users and time, and the units of diversion would be Lyft's user identifier and the ID given to each time unit. Specifically, I would run the trial over a two week period and divide this experimental period into 2016 10-minute time-units. Since I've chosen a series of paired tests, I would first randomize by users to fill the g treatment and control groups, and then randomize assignment of each time-unit to one of the g groups.
+The units of randomization would therefore be users and time, and the units of diversion would be Lyft's user identifier and the ID given to each time unit. Specifically, I would run the trial over a two-week period and divide this experimental period into 2016 10-minute time-units. Since I've chosen a series of paired tests, I would first randomize by users to fill the g treatment and control groups, and then randomize assignment of each time-unit to one of the g groups.
 
-Although using a single, long time period per group would avoid the resource sharing problem of Lyft's two-sided market, as explained in [Stratification along Time](#2d-stratification-along-time), randomizing by multiple, short periods allows us to accounting for time as a confounder.
+Although using a single, long time period per group would avoid the resource sharing problem of Lyft's two-sided market, as explained in [Stratification along Time](#2d-stratification-along-time), randomizing by multiple, short periods allows us to account for time as a confounder.
 
 <br>
 
@@ -1024,7 +1032,7 @@ As a side note, although its not feasible to carry out the study for a whole yea
 
 In terms of filtering, although I would want to see how different strata respond to our max wait time changes (e.g., first time users of the ride share features vs experiences users, users at different times of day), I don't see a need to exclude any type of rider from the study, so I would not apply any filter.
 
-Setting the sample ratio is a key consideration in this experimental design due to the nature of the treatment being tested: Testing a range of max wait times risks hurting business goals in two ways. Firstly, short term revenue losses in situations where customers encounter a wait time above their tolerance and choose to look for a ride with competitor apps. Secondly, lets consider the type of customer that prefers to stick with a single ride hailing app until it causes them efficiency problems, instead of regularly compare apps for the best prices and times. For these customers, encounter multiple instances of long max wait times may cause them to switch to a competitor and not consider Lyft again for a long period. This risk is possible even considering that max wait times are being tested only in the ride sharing feature, which is likely used by cost-conscious customers.
+Setting the sample ratio is a key consideration in this experimental design due to the nature of the treatment being tested: Testing a range of max wait times risks hurting business goals in two ways. Firstly, short term revenue losses in situations where customers encounter a wait time above their tolerance and choose to look for a ride with competitor apps. Secondly, let's consider the type of customer that prefers to stick with a single ride hailing app until it causes them efficiency problems, instead of regularly compare apps for the best prices and times. For these customers, encounter multiple instances of long max wait times may cause them to switch to a competitor and not consider Lyft again for a long period. This risk is possible even considering that max wait times are being tested only in the ride sharing feature, which is likely used by cost-conscious customers.
 
 Thus, I would opt for keeping the treatment groups much smaller than the control, which will have the smallest max wait time. The exact sample sizes will be determined in step 3 when we decide on the statistical test and power needed for the experiment.
 
@@ -1032,7 +1040,7 @@ Thus, I would opt for keeping the treatment groups much smaller than the control
 
 ### When to Run and When to Start Measuring
 
-In terms of when to run, I would take care to avoid one-off events like the first weeks of school, elections, or extreme weather events, as these phenomena would significantly change peoples transportation needs and priority levels.
+In terms of when to run, I would take care to avoid one-off events like the first weeks of school, elections, or extreme weather events, as these phenomena would significantly change people's transportation needs and priority levels.
 
 In terms of when to start measuring, increasing the wait time will probably not lead to novelty effects, so the question is whether primacy effects will be present. I think it could be argued that loyal customers could get use to longer wait times over time, but I think a more likely result is that customers continue to compare ride-hailing competitors and maintain the same tolerance to wait times as when the treatment is first implemented.
 
@@ -1042,7 +1050,7 @@ Thus, I think it is safe to say that primacy effects will not be present and we 
 
 ### Choosing the Hypothesis Tests
 
-So far our Lyft experimental design includes a series of paired tests for continuous and binary evaluation metrics and counter metrics.
+So far, our Lyft experimental design includes a series of paired tests for continuous and binary evaluation metrics and counter metrics.
 - For the continuous metrics - Feature Usage, App Usage, and Shared-Rides Gross Profit - I would use a paired T test per treatment group, metric, and strata. Z tests are not viable as we don't know population means, and the T test after n > 30 converges to the Z test anyway.
 - For the categorical metrics - Customer Ratings and Driver Ratings - I would use a chi-squared test per treatment group, metric, and strata. As well, we could use a single softmax regression that considers all strata, one per metric and treatment.
 - For the binary metrics - Cancellations on Wait-Time Screen and Cancellations on Finding-Driver Screen- I would use a McNemar's test per treatment group, metric, and strata.
@@ -1055,7 +1063,7 @@ Accounting of the hypothesis tests:
     - Pick-up / Drop-off Location: I will include 3 levels: "leaving home", "towards airport", "towards home", "other".
     - Loyal vs Efficient: 2 levels exist for this confounder.
 
-In total, thats 840 tests, which is a lot but understandable given the in depth analysis we will be doing on the effect of max wait times. Given the large number of tests, the Holm-Bonferroni correction is a better choice over the Bonferroni correction in correcting the FWER. I would also use the Holm-Bonferroni correction to correct the FDR. See [Multiple Testing Problem](#multiple-testing-problem) for details.
+In total, that's 840 tests, which is a lot but understandable given the in depth analysis we will be doing on the effect of max wait times. Given the large number of tests, the Holm-Bonferroni correction is a better choice over the Bonferroni correction in correcting the FWER. I would also use the Holm-Bonferroni correction to correct the FDR. See [Multiple Testing Problem](#multiple-testing-problem) for details.
 
 <br>
 
@@ -1083,11 +1091,11 @@ Null Hypothesis and Minimal Detectible Effect per metric:
     - We have a 70% screen-to-ride conversion rate bringing in 195M per quarter. A 0.025% decrease in cancellations, holding all else constant, would increase revenue by about $47K per quarter.
     - The null hypothesis is 30% and the minimum detectible effect would be a 0.025% change in this binary metric.
 - Feature Usage:
-    - Given the assumptions, this feature has a null hypothesis of 3M rides in the two week experiment period, and a minimum detectable effect of 800 rides for the two week period, equating to around $50K revenue for the quarter.
+    - Given the assumptions, this feature has a null hypothesis of 3M rides in the two-week experiment period, and a minimum detectable effect of 800 rides for the two-week period, equating to around $50K revenue for the quarter.
 - App Usage:
-    - We have a 75% interaction-to-ride conversion rate producing 188M rides per quarter, bringing in 975M per quarter. Thus, the null null hypothesis would be 31.3M rides for the two week period, and I would want to detect a change of at least 1,570 rides for the test, corresponding to a $50K change in revenue per quarter decrease in cancellations.
+    - We have a 75% interaction-to-ride conversion rate producing 188M rides per quarter, bringing in 975M per quarter. Thus, the null null hypothesis would be 31.3M rides for the two-week period, and I would want to detect a change of at least 1,570 rides for the test, corresponding to a $50K change in revenue per quarter decrease in cancellations.
 - Shared-Rides Gross Profit:
-    - Following the stated goal to detect a minimum $50K change in revenue after incentives and driver fees per quarter, the null hypothesis for the two week period would be $32.5M and the minimum detectible effect would be $8.33K
+    - Following the stated goal to detect a minimum $50K change in revenue after incentives and driver fees per quarter, the null hypothesis for the two-week period would be $32.5M and the minimum detectible effect would be $8.33K
 - Customer Ratings and Driver Ratings:
     - These metrics are modelled as ordinal variables from 1 to 5, so I would want to be able to detect a change between each level.
 - Cancellations on Finding-Driver Screen:
@@ -1116,8 +1124,8 @@ To achieve a power of 0.8 and statistical significance of 0.95 over 840 tests:
 
 Below we can see that the cancellation rates must be increased to meet feasible sample size limits, but otherwise our minimum detectible effects are achievable.
 - At least 940K users are needed, which is 4.4% of Lyft's 2023 active user count. This is well within our sample size ratio considerations.
-- At least 53M ride requests are needed. If we use 4.4% of Lyft's users for the study, and receive an average of 3.13M shared user rides per two week period, with a 70% screen-to-ride conversion rate, we can expect 197K ride requests for the study. Thus, the minimum effect size would need to be drastically increased to 0.27%.
-- At least 1.2K ratings are needed, which would mean receiving a single rating from at least 0.0013% of our 940K experimental users within the two week experiment period, which is a reasonable expectation.
+- At least 53M ride requests are needed. If we use 4.4% of Lyft's users for the study, and receive an average of 3.13M shared user rides per two-week period, with a 70% screen-to-ride conversion rate, we can expect 197K ride requests for the study. Thus, the minimum effect size would need to be drastically increased to 0.27%.
+- At least 1.2K ratings are needed, which would mean receiving a single rating from at least 0.0013% of our 940K experimental users within the two-week experiment period, which is a reasonable expectation.
 
 <br>
 
