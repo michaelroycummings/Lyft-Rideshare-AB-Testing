@@ -2,7 +2,7 @@
 
 #### Article Summary and Inspiration
 
-This article aims to present a ***comprehensive checklist*** for experimental design and execution, using feature optimization of Lyft's shared rides as a real-world application example in each section. It is inspired by the lack of easily accessible, comprehensive A/B testing guides and the research I conducted for final round interviews at Lyft. Although the role was filled before my interview date, this experience motivated me to understand the testing process from start to finish, including possible edge cases.
+This guide presents a ***comprehensive checklist*** for experimental design and execution, using feature optimization of Lyft's shared rides as a real-world application example in each section. It is inspired by the lack of easily accessible, comprehensive A/B testing guides and the research I conducted for final round interviews at Lyft. Although the role was filled before my interview date, this experience motivated me to understand the testing process from start to finish, including possible edge cases.
 
 In this article:
 - I first walk through all the design and execution considerations of an A/B/N test in the General Framework section, providing aimed at optimizing the maximum wait times shown to users requesting shared rides.
