@@ -1,4 +1,4 @@
-# Mastering A/B/N Testing with Lyft's Ride Sharing Feature Optimization
+# Mastering A/B/N Testing with Optimization of Lyft's Ride Share Feature
 
 #### Article Summary and Inspiration
 
